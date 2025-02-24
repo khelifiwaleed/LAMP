@@ -1,0 +1,27 @@
+# Ignorer les fichiers de configuration de l’IDE
+.idea/
+.vscode/
+*.swp
+
+# Ignorer les fichiers générés
+node_modules/
+vendor/
+var/
+public/build/
+public/uploads/
+
+# Ignorer les fichiers sensibles
+.env
+.env.local
+.env.*.local
+config/jwt/
+
+# Ignorer les logs et caches
+*.log
+var/cache/
+var/logs/
+
+# Ignorer Docker lui-même
+.dockerignore
+Dockerfile
+docker-compose.yml
