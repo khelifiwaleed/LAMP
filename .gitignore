@@ -1,0 +1,44 @@
+# Exclure les fichiers de configuration sensibles
+.env
+.env.local
+.env.*.local
+.envrc
+
+# Exclure les fichiers temporaires et logs
+*.log
+*.cache
+*.lock
+*.pid
+*.seed
+*.swp
+*.swo
+*.DS_Store
+
+# Exclure les fichiers de dépendances et de compilation
+/vendor/
+/node_modules/
+/var/
+/tmp/
+/dist/
+/build/
+
+# Exclure les fichiers liés à Docker
+docker-compose.override.yml
+database_data/
+db_data/
+*.sql
+
+# Exclure les fichiers liés aux IDE
+.idea/
+.vscode/
+*.iml
+
+# Exclure les fichiers générés par Composer
+composer.phar
+composer.lock
+
+# Exclure les fichiers générés par Nginx, PHP et MySQL
+nginx/logs/
+php-fpm.log
+php-errors.log
+mysql/logs/
