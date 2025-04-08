@@ -52,3 +52,6 @@ docker-stop:
 	@echo "Stopping and removing all Docker containers..."
 	@if [ -n "$$(docker ps -aq)" ]; then docker rm $$(docker ps -aq) -f; else echo "No containers to remove."; fi
 
+## @Docker Mysql Connect
+docker-db:
+	docker exec -it mariadb-container bash -c "mariadb -u root -proot $(DATABASE_NAME)"
