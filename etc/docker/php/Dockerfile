@@ -7,7 +7,27 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     libzip-dev \
-    && docker-php-ext-install pdo pdo_mysql zip
+    libxml2-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libicu-dev \
+    libonig-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo \
+        pdo_mysql \
+        mysqli \
+        zip \
+        xml \
+        curl \
+        gd \
+        intl \
+        mbstring \
+        simplexml \
+        opcache
 
 # Install Composer globally
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -22,7 +42,7 @@ WORKDIR /var/www/html
 COPY ../../../composer.json /var/www/html/
 RUN composer install --no-scripts --no-interaction
 
-# Ensure proper permissions for the vendor directory
+# Ensure proper permissions
 RUN mkdir -p /var/www/html/vendor \
     && chown -R docker-user:docker-user /var/www/html \
     && chmod -R 777 /var/www/html/vendor
@@ -36,5 +56,4 @@ COPY ../../.. /var/www/html
 # Expose PHP-FPM port
 EXPOSE 9000
 
-# Run PHP-FPM (this should now be available)
 CMD ["php-fpm"]
