@@ -13,16 +13,21 @@ version: welcome
 	@cat VERSION
 	@printf "\n"
 
-## @Make start
-start: build-env docker-up
+## @Make Install and Start application
+start: build-env docker-up composer-install
 	$(shell echo "INSTALL_DATE=$(shell date +%Y%m%d%H%M%S)" > .install)
 	$(call notify,Successful install project\nWelcome !! now execute < make start > to launch all services in the project.)
 	@printf " - Successful ${GREEN}start application${RESET} project\n"
+	@printf " - Now Start Commande: ${GREEN}make console doctrine:migrations:migrate${RESET} \n"
 
-## @Application Stop application
+## @Make Stop application
 stop: docker-stop
 	$(call notify,Successful stopping of application)
 	@printf " - Successful ${GREEN}stopping${RESET} of the application\n"
+
+## @Mysql Connect
+mysql:
+	docker exec -it mariadb-container bash -c "mariadb -u root -proot $(DATABASE_NAME)"
 
 ## @Build Build environment configuration
 build-env:
@@ -38,20 +43,37 @@ build-env:
 	$(shell echo "NPM_CACHE=$(NPM_CACHE)" >> .env)
 	$(shell echo "MKCERT_HOME=$(MKCERT_HOME)" >> .env)
 	$(shell echo "IMAGE_TAG=$(IMAGE_TAG)" >> .env)
+	$(shell echo "DATABASE_URL=mysql://$(DATABASE_USER):$(DATABASE_PASSWORD)@db:$(DATABASE_PORT)/$(DATABASE_NAME)" >> .env)
 	$(shell mkdir -p vendor > /dev/null 2>&1 )
 
-## @Docker Pull all docker images
+## @Console All Console Commend "bin/console"
+console:
+	@printf " - ${GREEN}Symfony Command: $(wordlist 2, 99, $(MAKECMDGOALS))${RESET} \n"
+	@docker exec -it php-fpm bash -c "bin/console $(wordlist 2, 99, $(MAKECMDGOALS))"
+
+# Docker Pull all docker images
 # Récupère les dernières images pour tous les services définis dans le fichier docker-compose.
 # L'option --ignore-pull-failures permet de continuer même si certaines images ne peuvent pas être récupérées.
 docker-up:
 	chmod +x bin/docker-compose
 	@bin/docker-compose
 
-## @Docker Commande pour arrêter et supprimer tous les conteneurs Docker
+# @Docker Commande pour arrêter et supprimer tous les conteneurs Docker
 docker-stop:
 	@echo "Stopping and removing all Docker containers..."
-	@if [ -n "$$(docker ps -aq)" ]; then docker rm $$(docker ps -aq) -f; else echo "No containers to remove."; fi
+	@if [ -n "$$(docker ps -aq)" ]; then \
+		docker rm -f $$(docker ps -aq); \
+		else \
+			echo "No containers to remove."; \
+		fi
 
-## @Docker Mysql Connect
-docker-db:
-	docker exec -it mariadb-container bash -c "mariadb -u root -proot $(DATABASE_NAME)"
+# Install All Dependency Project
+composer-install:
+	@echo "Install All Dependency Project"
+    $(shell composer install --no-scripts)
+
+## @Composer All Composer Commend
+composer:
+	@printf " - ${GREEN}Symfony Command: $(wordlist 2, 99, $(MAKECMDGOALS))${RESET} \n"
+	@docker exec -it php-fpm bash -c "composer $(wordlist 2, 99, $(MAKECMDGOALS))"
+

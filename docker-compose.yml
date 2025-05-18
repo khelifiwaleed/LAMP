@@ -6,7 +6,7 @@ services:
       dockerfile: ./etc/docker/php/Dockerfile
     restart: unless-stopped
     volumes:
-      - ./public:/var/www/html/public:rw
+      - .:/var/www/html:rw
       - ./etc/docker/php/host/path/conf.d/php.ini:/usr/local/etc/php/php.ini
     networks:
       - app-network
@@ -42,8 +42,8 @@ services:
     container_name: mariadb-container
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: root
-      MARIADB_DATABASE: myDataBaseName
+      MARIADB_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MARIADB_DATABASE: ${DATABASE_NAME}
     ports:
       - "3306:3306"
     networks:
